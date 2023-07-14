@@ -1,0 +1,13 @@
+2023-07-12 17:44:32,505 - scheduler - INFO - #----------------------- Inicia proceso de Scheduler
+2023-07-12 17:44:32,505 - scheduler - INFO - Orden a procesar send_email
+2023-07-12 17:44:32,507 - scheduler - INFO - detener................
+2023-07-12 17:44:52,508 - scheduler - INFO - continuar................
+2023-07-12 17:44:52,563 - scheduler - INFO - Modulo: <module 'jobs.sendEmail.send_email' from 'd:\\WorkSpace\\WS_REACT_PRANICAL\\JobScheduler\\backend\\jobs\\sendEmail\\send_email.py'>
+2023-07-12 17:44:52,563 - scheduler - INFO - Instancia: <class 'jobs.sendEmail.send_email.SendEmail'>
+2023-07-12 17:44:52,564 - scheduler - INFO - Enviar correo
+2023-07-12 17:44:52,564 - scheduler - INFO - send email: smtp.googlemail.com
+2023-07-12 17:44:54,655 - scheduler - INFO - Correo enviado correctamente
+2023-07-12 17:44:54,655 - scheduler - INFO - Finalizo el envio
+2023-07-12 17:44:54,656 - scheduler - INFO - Resultado: True
+2023-07-12 17:44:54,691 - scheduler - INFO - Scheduler finalizado con exito
+2023-07-12 17:44:54,697 - scheduler - INFO - Proceso termino exitosamente.

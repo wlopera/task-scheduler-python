@@ -1,0 +1,32 @@
+{
+  "params": [
+    {
+      "name": "smtp_server",
+      "value": "smtp.googlemail.com"
+    },
+    {
+      "name": "port",
+      "value": "587"
+    },
+    {
+      "name": "from_email",
+      "value": "lopera.william@gmail.com"
+    },
+    {
+      "name": "password",
+      "value": "ksrbarzzcvuyehyx"
+    },
+    {
+      "name": "to_mail",
+      "value": "william.lopera@pranical.com"
+    },
+    {
+      "name": "subject",
+      "value": "Correo de prueba"
+    },
+    {
+      "name": "message",
+      "value": "Este es un correo de prueba enviado desde Python"
+    }
+  ]
+}

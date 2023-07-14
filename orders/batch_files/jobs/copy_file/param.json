@@ -1,0 +1,48 @@
+{
+  "params": [
+    {
+      "name": "source_server",
+      "value": "192.168.251.95"
+    },
+    {
+      "name": "source_port",
+      "value": "22"
+    },
+    {
+      "name": "source_user",
+      "value": "srv_jobscheduler"
+    },
+    {
+      "name": "source_password",
+      "value": "jv6yKgK-LZp:7B6eDo"
+    },
+    {
+      "name": "target_server",
+      "value": "192.168.251.95"
+    },
+    {
+      "name": "target_port",
+      "value": "22"
+    },
+    {
+      "name": "target_user",
+      "value": "srv_jobscheduler"
+    },
+    {
+      "name": "target_password",
+      "value": "jv6yKgK-LZp:7B6eDo"
+    },
+    {
+      "name": "source_path",
+      "value": "/ACH/enviado_ccb/2023-06-05/"
+    }, 
+    {
+      "name": "target_path",
+      "value": "/tmp/files/"
+    },
+    {
+      "name": "operation",
+      "value": "Copy"
+    }
+  ]
+}

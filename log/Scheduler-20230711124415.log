@@ -1,0 +1,19 @@
+2023-07-11 12:44:15,241 - scheduler - INFO - #----------------------- Inicia proceso de Scheduler
+2023-07-11 12:44:15,241 - scheduler - INFO - Orden a procesar generate_data
+2023-07-11 12:44:15,241 - scheduler - INFO - detener................
+2023-07-11 12:44:35,246 - scheduler - INFO - continuar................
+2023-07-11 12:44:35,246 - scheduler - INFO - Modulo: <module 'jobs.processFile.process_file' from 'd:\\WorkSpace\\WS_REACT_PRANICAL\\JobScheduler\\backend\\jobs\\processFile\\process_file.py'>
+2023-07-11 12:44:35,246 - scheduler - INFO - Instancia: <class 'jobs.processFile.process_file.ProcessFile'>
+2023-07-11 12:44:35,248 - scheduler - INFO - Operacion: None
+2023-07-11 12:44:35,248 - scheduler - INFO - Resultado: False
+2023-07-11 12:44:35,267 - scheduler - ERROR - Error.........................: ('Error salida del app: ', 'task1')
+Traceback (most recent call last):
+  File "d:\WorkSpace\WS_REACT_PRANICAL\JobScheduler\backend\routes\chains_routes.py", line 95, in process
+    spooler.process()
+  File "d:\WorkSpace\WS_REACT_PRANICAL\JobScheduler\backend\spooler_task.py", line 41, in process
+    self.process_job(self.get_job(self.current_job))
+  File "d:\WorkSpace\WS_REACT_PRANICAL\JobScheduler\backend\spooler_task.py", line 70, in process_job
+    raise Exception("Error salida del app: ", self.current_job)
+Exception: ('Error salida del app: ', 'task1')
+
+2023-07-11 12:44:35,267 - scheduler - INFO - Proceso termino con error.

@@ -1,0 +1,131 @@
+----------------------------------------------------------------------
+Backend: Python
+----------------------------------------------------------------------
+Crear proyceto y agregar librerias requeridas
+----------------------------------------------------------------------
+
+----------------------------------------------------------------------
+Backend: Python - Flask
+----------------------------------------------------------------------
+> pip install Flask
+> pip install schedule
+
+> pip install flask-cors
+
+app.py:
+    from flask_cors import CORS
+    ...
+    
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+    # CORS(app, resources={r"/api/*": {"origins": "*"}}) # Mas generico
+
+----------------------------------------------------------------------
+
+----------------------------------------------------------------------
+Estructura caroetas y archivos
+----------------------------------------------------------------------
+Carpetas:
+--------
+    helpers
+    jobs
+    og
+    orders
+    routes
+    util
+
+ARchivos proyecto:
+-----------------
+app.py
+cron.py
+spooler_task.py
+
+Archivos configuración:
+----------------------
+.gitignore
+import.txt
+requirements.txt
+
+
+
+----------------------------------------------------------------------
+Subir a vercel
+----------------------------------------------------------------------
+- Crear archivo requirements.txt, con dependencias:
+        Flask==2.3.2
+        schedule==1.2.0
+        Flask-Cors==3.0.10
+  Nota:  $>  pip freeze > requirements.txt
+
+- Instalar vercel si no esta instalado:
+  $> npm install -g vercel
+
+- vercel init o
+- Cerar archivo vercel.json 
+  {
+    "version": 2,
+    "builds": [
+      {
+        "src": "app.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/app.py"
+      }
+    ]
+  }
+
+  Nota: Esto configura Vercel para usar el runtime de Python y ejecutar app.py 
+  como tu archivo principal de Flask.
+
+  - Arrancar proceso vercel:
+   D:\WorkSpace\WS_REACT_PRANICAL\JobScheduler\backend>vercel
+    Vercel CLI 31.0.2
+    ? Set up and deploy “D:\WorkSpace\WS_REACT_PRANICAL\JobScheduler\backend”? [Y/n] y
+    ? Which scope do you want to deploy to? wlopera
+    ? Link to existing project? [y/N] n
+    ? What’s your project’s name? backend
+    ? In which directory is your code located? ./
+    🔗  Linked to wlopera/backend (created .vercel and added it to .gitignore)
+    🔍  Inspect: https://vercel.com/wlopera/backend/Bpm2xouvjPGmZjzf6vvn9Qknj4d9 [3s]
+    ✅  Production: https://backend-chi-jet.vercel.app [13s]
+    📝  Deployed to production. Run `vercel --prod` to overwrite later (https://vercel.link/2F).
+    💡  To change the domain or build command, go to https://vercel.com/wlopera/backend/settings
+
+ Nota: https://vercel.com/wlopera/backend/7bNjVt7PnywhGhJs5MYBmHoSAfd8
+       - Para ver detalles
+
+       https://backend-chi-jet.vercel.app 
+       - Para probarlo
+
+       https://backend-chi-jet.vercel.app/_logs
+       - Para ver errores de compilación
+
+para actualizar proceso vercel:
+
+  $ vercel --prod
+  Vercel CLI 31.0.2
+  Retrieving project…
+  Deploying wlopera/backend
+  Uploading [--------------------] (0.0B/4.3KB)
+  Uploading [====================] (4.3KB/4.3KB)
+  Inspect: https://vercel.com/wlopera/backend/5B6iQTGM3NU5k3Nre7hx5b1DQrGu [3s]
+  https://backend-nlvaf44wx-wlopera.vercel.appQueued
+  Building
+  Completing
+  Production: https://backend-pi-fawn.vercel.app [13s]
+  Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
+
+       
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------

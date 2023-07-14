@@ -1,0 +1,16 @@
+[
+    {
+        "name": "task1",
+        "package": "processFile.process_file",
+        "class": "ProcessFile",
+        "next": "task2",
+        "error": "error"
+    },
+    {
+        "name": "task2",
+        "package": "",
+        "class": "",
+        "next": "success",
+        "error": "error"
+    }
+]

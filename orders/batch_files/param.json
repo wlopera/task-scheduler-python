@@ -1,0 +1,26 @@
+[
+  {
+    "name": "get_list",
+    "package": "processFile.process_file",
+    "class": "ProcessFile",
+    "param": "batch_files\\get_list",
+    "next": "copy_file",
+    "error": "error"
+  },
+  {
+    "name": "copy_file",
+    "package": "processFile.process_file",
+    "class": "ProcessFile",
+    "param": "batch_files\\copy_file",
+    "next": "send_email",
+    "error": "error"
+  },
+  {
+    "name": "send_email",
+    "package": "sendEmail.send_email",
+    "class": "SendEmail",
+    "param": "batch_files\\send_email",
+    "next": "exito",
+    "error": "error"
+  }
+]
