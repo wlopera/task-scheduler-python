@@ -20,7 +20,7 @@ def initialize_service(state):
 
     # Creo una instancia de la clase order_service
     order_service = OrderService(
-        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS)
+        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS, None)
 
 
 @orders_routes.route('/', methods=['GET'])

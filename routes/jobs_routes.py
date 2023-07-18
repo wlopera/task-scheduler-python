@@ -1,13 +1,13 @@
 from flask import Blueprint, request
-from util.folder_utils import FolderUtils
-from util.json_utils import JsonUtils
+
 from util.service_utils import ServiceUtils
-from util.constants import PATH_FOLDERS_ORDER, FILE_PARAM_JSON, NAME_JOBS
 from util.constants import MONGO_DB_COLLECTION_ORDERS
 from services.jobs_service import JobService
 
 jobs_routes = Blueprint('jobs_routes', __name__, url_prefix='/api/jobs')
 job_service = None  # Variable estática para almacenar el servicio de tareas
+# Variable estática para almacenar el cliente de MongoDB para trassaciones
+clientMongoDB = None
 
 
 @jobs_routes.record
@@ -19,10 +19,12 @@ def initialize_service(state):
     global job_service
     # Obtener la instancia de la conexión a MongoDB de la configuración de la aplicación
     mongo_db_connection = state.app.config.get('DATABASE')
+    # Obtenemos el clinete de mongoDB para procesos transaccionales
+    clientMongoDB = state.app.config.get('CLIENT')
 
     # Creo una instancia de la clase job_service
     job_service = JobService(
-        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS)
+        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS, clientMongoDB)
 
 
 @jobs_routes.route('/<string:order_id>', methods=['POST'])
@@ -53,9 +55,10 @@ def modify_job():
     try:
         param = request.get_json()
         order_id = param['order_id']
+        old_job = param['old_value']
         new_job = param['new_value']
 
-        jobs = job_service.modify(order_id, new_job)
+        jobs = job_service.modify(order_id, old_job, new_job)
 
         return ServiceUtils.success({"data": jobs})
     except Exception as e:

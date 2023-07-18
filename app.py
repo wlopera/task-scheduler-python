@@ -21,6 +21,7 @@ handler = ConnectionHandler(MONGO_DB_URI, MONGO_DB_PORT, MONGO_DB_NAME)
     Al asignar la instancia de la conexión a la configuración de la aplicación, puedes acceder a ella en otras partes de tu aplicación
     utilizando app.config['DATABASE'] para obtener la conexión a MongoDB.
 """
+app.config['CLIENT'] = handler.client
 app.config['DATABASE'] = handler.db
 
 # Rutas
