@@ -3,27 +3,31 @@ from util.folder_utils import FolderUtils
 from util.json_utils import JsonUtils
 from util.service_utils import ServiceUtils
 from util.constants import PATH_FOLDERS_ORDER, FILE_PARAM_JSON, NAME_JOBS
+from util.constants import MONGO_DB_COLLECTION_ORDERS
+from services.jobs_service import JobService
 
 jobs_routes = Blueprint('jobs_routes', __name__, url_prefix='/api/jobs')
+job_service = None  # Variable estática para almacenar el servicio de tareas
 
+@jobs_routes.record
+def initialize_service(state):
+    """
+        El decorador @orders_routes.record es específico de Flask y se utiliza para registrar una función de configuración 
+        que se ejecuta cuando se registra el blueprint orders_routes. 
+    """
+    global job_service
+    # Obtener la instancia de la conexión a MongoDB de la configuración de la aplicación
+    mongo_db_connection = state.app.config.get('DATABASE')
 
-@jobs_routes.route('/<string:name>', methods=['POST'])
-def jobs(name):
+    # Creo una instancia de la clase job_service
+    job_service = JobService(
+        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS)
+    
+@jobs_routes.route('/<string:order_id>', methods=['POST'])
+def get_jobs(order_id):
     try:
-        jobs = []
-        if name:
-            jobs = get_jobs(name)
-        return ServiceUtils.success({"data": jobs})
-    except Exception as e:
-        return ServiceUtils.error(e)
-
-
-@jobs_routes.route('/fromJson/<string:name>', methods=['POST'])
-def jobs_from_json(name):
-    try:
-        jobs = []
-        if name:
-            jobs = get_jobs_from_json(name)
+        print(1111, order_id)
+        jobs = job_service.get(order_id)
         return ServiceUtils.success({"data": jobs})
     except Exception as e:
         return ServiceUtils.error(e)
@@ -33,122 +37,14 @@ def jobs_from_json(name):
 def add_job():
     try:
         param = request.get_json()
+        
+        print(12345, param)
         order_id = param['order_id']
-        job_id = param['job_id']
-
-        create_job_folders(order_id, job_id)
-        add_job_to_order(order_id, job_id)
-
-        jobs = get_jobs(order_id)
-
-        activate_job(jobs, job_id)
-
+        name = param['name']
+        
+        jobs = job_service.add(name, order_id)
         return ServiceUtils.success({"data": jobs})
     except Exception as e:
         return ServiceUtils.error(e)
 
 
-@jobs_routes.route('/modify', methods=['POST'])
-def modify_job():
-    try:
-        param = request.get_json()
-        order_id = param['order_id']
-        old_job = param['old_value']
-        new_job = param['new_value']
-
-        rename_job_folders(order_id, old_job, new_job)
-        update_job_in_order(order_id, old_job, new_job)
-
-        jobs = get_jobs(order_id)
-        activate_job(jobs, new_job)
-
-        return ServiceUtils.success({"data": jobs})
-    except Exception as e:
-        return ServiceUtils.error(e)
-
-
-@jobs_routes.route('/delete', methods=['POST'])
-def delete_job():
-    try:
-        param = request.get_json()
-        order_id = param['order_id']
-        job_id = param['job_id']
-
-        delete_job_folders(order_id, job_id)
-        remove_job_from_order(order_id, job_id)
-
-        jobs = get_jobs(order_id)
-
-        return ServiceUtils.success({"data": jobs})
-    except Exception as e:
-        return ServiceUtils.error(e)
-
-
-def get_jobs(order_id):
-    response = FolderUtils.get_folders(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{NAME_JOBS}")
-
-    jobs = [{"id": index, "name": value}
-            for index, value in enumerate(response)]
-
-    return jobs
-
-
-def get_jobs_from_json(order_id):
-    response = JsonUtils.read_json(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{FILE_PARAM_JSON}")
-
-    jobs = [{"id": index, "name": data['name']}
-            for index, data in enumerate(response)]
-
-    return jobs
-
-
-def create_job_folders(order_id, job_id):
-    FolderUtils.create_folder(
-        PATH_FOLDERS_ORDER + "/" + order_id + "/"+NAME_JOBS+"/", job_id)
-
-    JsonUtils.write_json(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{NAME_JOBS}/{job_id}/{FILE_PARAM_JSON}", {"params": []})
-
-
-def update_job_in_order(order_id, old_job, new_job):
-    JsonUtils.update_item(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{FILE_PARAM_JSON}", 'name', old_job, new_job)
-
-
-def rename_job_folders(order_id, old_job, new_job):
-    FolderUtils.rename_folder(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{NAME_JOBS}", old_job, new_job)
-    JsonUtils.update_item(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{FILE_PARAM_JSON}", 'name', old_job, new_job)
-
-
-def delete_job_folders(order_id, job_id):
-    FolderUtils.delete_folder(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{NAME_JOBS}/{job_id}")
-
-
-def add_job_to_order(order_id, job_id):
-    values = {
-        "name": job_id,
-        "package": "",
-        "class": "",
-        "next": "success",
-        "error": "error"
-    }
-    JsonUtils.add_item(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{FILE_PARAM_JSON}", values)
-
-
-def remove_job_from_order(order_id, job_id):
-    JsonUtils.remove_item_by_identifier(
-        f"{PATH_FOLDERS_ORDER}/{order_id}/{FILE_PARAM_JSON}", 'name', job_id)
-
-
-def activate_job(jobs, job_id):
-    for job in jobs:
-        if job["name"] == job_id:
-            job["active"] = True
-        else:
-            job.pop("active", None)

@@ -28,7 +28,7 @@ class TemplateInterface(ABC):
     @abstractmethod
     def add(self, name):
         """
-           Agregar item de lqa base de datos.       
+           Agregar item de la base de datos.       
         Author:
             wlopera
         Return:

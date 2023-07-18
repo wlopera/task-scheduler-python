@@ -25,11 +25,11 @@ class OrderService(TemplateInterface):
         })
 
         orders = self.get()
-        print("Documento creado con el ID:", result.inserted_id, orders)
+        # print("Documento creado con el ID:", result.inserted_id, orders)
 
         self.activate(orders, result.inserted_id)
 
-        print("ordenes nuevas: ", orders)
+        # print("ordenes nuevas: ", orders)
 
         return orders
 
@@ -49,21 +49,21 @@ class OrderService(TemplateInterface):
 
         orders = self.get()
 
-        print("Documento modificado:", old_item['id'],  orders)
+        # print("Documento modificado:", old_item['id'],  orders)
 
         self.activate(orders, old_item['id'])
         
-        print("ordenes modificadfas: ", orders)
+        # print("ordenes modificadfas: ", orders)
 
         return orders
 
     def delete(self, item_id):
         result = self.collection.delete_one({'_id': ObjectId(item_id)})
 
-        if result.deleted_count > 0:
-            print("Documento eliminado exitosamente.")
-        else:
-            print("No se encontró el documento con el ID:", item_id)
+        # if result.deleted_count > 0:
+        #     print("Documento eliminado exitosamente.")
+        # else:
+        #     print("No se encontró el documento con el ID:", item_id)
 
         orders = self.get()
         

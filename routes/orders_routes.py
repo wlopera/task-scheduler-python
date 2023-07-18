@@ -18,7 +18,7 @@ def initialize_service(state):
     # Obtener la instancia de la conexión a MongoDB de la configuración de la aplicación
     mongo_db_connection = state.app.config.get('DATABASE')
 
-    # Creo una instancia d ela clase order_service
+    # Creo una instancia de la clase order_service
     order_service = OrderService(
         mongo_db_connection, MONGO_DB_COLLECTION_ORDERS)
 
