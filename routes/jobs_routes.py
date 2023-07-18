@@ -9,6 +9,7 @@ from services.jobs_service import JobService
 jobs_routes = Blueprint('jobs_routes', __name__, url_prefix='/api/jobs')
 job_service = None  # Variable estática para almacenar el servicio de tareas
 
+
 @jobs_routes.record
 def initialize_service(state):
     """
@@ -22,11 +23,11 @@ def initialize_service(state):
     # Creo una instancia de la clase job_service
     job_service = JobService(
         mongo_db_connection, MONGO_DB_COLLECTION_ORDERS)
-    
+
+
 @jobs_routes.route('/<string:order_id>', methods=['POST'])
 def get_jobs(order_id):
     try:
-        print(1111, order_id)
         jobs = job_service.get(order_id)
         return ServiceUtils.success({"data": jobs})
     except Exception as e:
@@ -37,14 +38,39 @@ def get_jobs(order_id):
 def add_job():
     try:
         param = request.get_json()
-        
-        print(12345, param)
+
         order_id = param['order_id']
         name = param['name']
-        
+
         jobs = job_service.add(name, order_id)
         return ServiceUtils.success({"data": jobs})
     except Exception as e:
         return ServiceUtils.error(e)
 
 
+@jobs_routes.route('/modify', methods=['POST'])
+def modify_job():
+    try:
+        param = request.get_json()
+        order_id = param['order_id']
+        new_job = param['new_value']
+
+        jobs = job_service.modify(order_id, new_job)
+
+        return ServiceUtils.success({"data": jobs})
+    except Exception as e:
+        return ServiceUtils.error(e)
+
+
+@jobs_routes.route('/delete', methods=['POST'])
+def delete_job():
+    try:
+        param = request.get_json()
+        order_id = param['order_id']
+        item_id = param['item_id']
+
+        jobs = job_service.delete(order_id, item_id)
+
+        return ServiceUtils.success({"data": jobs})
+    except Exception as e:
+        return ServiceUtils.error(e)
