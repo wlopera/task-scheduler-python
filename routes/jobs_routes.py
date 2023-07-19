@@ -40,7 +40,6 @@ def get_jobs(order_id):
 def add_job():
     try:
         param = request.get_json()
-
         order_id = param['order_id']
         name = param['name']
 
@@ -75,5 +74,17 @@ def delete_job():
         jobs = job_service.delete(order_id, item_id)
 
         return ServiceUtils.success({"data": jobs})
+    except Exception as e:
+        return ServiceUtils.error(e)
+
+@jobs_routes.route('/chains/<string:order_id>', methods=['POST'])
+def get_chains(order_id):
+    try:
+        print(1111, order_id)
+        result = job_service.get_chains(order_id)
+        print(5555, result)
+        
+        
+        return ServiceUtils.success({"data": result})
     except Exception as e:
         return ServiceUtils.error(e)

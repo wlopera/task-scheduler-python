@@ -137,3 +137,15 @@ class JobService(TemplateInterface):
         self.collection.update_one(filter, update)
 
         return self.get(order_id)
+
+    def get_chains(self, order_id):
+        filter = {"_id": ObjectId(order_id)}
+        result = self.collection.find(filter)
+        json_response = [json.dumps(item, default=str) for item in result]
+
+        data = json.loads(json_response[0])
+
+        chains = [{"id": index, "name": item['name']}
+                  for index, item in enumerate(data['chains'])]
+
+        return chains

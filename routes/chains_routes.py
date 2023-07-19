@@ -95,22 +95,17 @@ def update_params():
     except Exception as e:
         return ServiceUtils.error(e)
 
+@chains_routes.route('/history')
+def history():
+    try:
+        # response = get_history()
+        # response.sort(key=lambda x: x['startDate'], reverse=True)
+        return ServiceUtils.success({"data": []})
+    except Exception as e:
+        return ServiceUtils.error(e)
 
-# @chains_routes.route('/update_params', methods=['POST'])
-# def update_params_job():
-#     try:
-#         param = request.get_json()
-#         order_id = param['order_id']
-#         job_id = param['job_id']
-#         new_data = param['data']
-
-#         JsonUtils.write_json(
-#             f"{PATH_FOLDERS_ORDER}/{order_id}/{NAME_JOBS}/{job_id}/{FILE_PARAM_JSON}", new_data)
-
-#         return ServiceUtils.success({})
-#     except Exception as e:
-#         return ServiceUtils.error(e)
-
+# def get_history():
+#     return JsonUtils.read_json(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}")
 
 # @chains_routes.route('/process/<string:name>', methods=['POST'])
 # def process(name):
