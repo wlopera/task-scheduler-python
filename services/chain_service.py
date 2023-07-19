@@ -24,7 +24,8 @@ class ChainService(TemplateInterface):
         pass
 
     def modify(self, order_id, chains):
-        session = self.clientMongoDB.start_session()  # Iniciar una sesión transaccional de MongoDB
+        # Iniciar una sesión transaccional de MongoDB
+        session = self.clientMongoDB.start_session()
 
         try:
             with session.start_transaction():  # Iniciar una transacción
@@ -81,3 +82,73 @@ class ChainService(TemplateInterface):
         self.collection.update_one(filter, update)
 
         return self.get(order_id)
+
+    def get_params(self, order_id, job_id):
+
+        # Consulta el documento que contiene el orden y el job específicos
+        filter = {"_id":  ObjectId(order_id)}
+        pipeline = [
+            {"$match": filter},
+            {"$unwind": "$jobs"},
+            {"$match": {"jobs._id": ObjectId(job_id)}},
+            {"$project": {"jobs._id": 1, "jobs.name": 1, "jobs.params": 1}}
+        ]
+
+        cursor = self.collection.aggregate(pipeline)
+
+        # Obtener los documentos como diccionarios directamente sin convertirlos a JSON
+        records = [document for document in cursor]
+
+        if records:
+            # Puedes acceder a los campos de los documentos directamente como diccionarios
+            record = records[0]
+            result = {
+                "id": str(record["_id"]),
+                "jobs": {
+                    "id": str(record["jobs"]["_id"]),
+                    "name": record["jobs"]["name"],
+                    "params": record["jobs"]["params"]
+                }
+            }
+            return result
+        else:
+            print("No se encontró el registro con los _ids especificados.")
+            return []
+
+    def update_params(self, order_id, job_id, params):
+        # Iniciar una sesión transaccional de MongoDB
+        session = self.clientMongoDB.start_session()
+
+        try:
+            with session.start_transaction():  # Iniciar una transacción
+
+                # Construir el filtro para encontrar la orden y el trabajo específicos
+                filter = {'_id': ObjectId(
+                    order_id), 'jobs._id': ObjectId(job_id)}
+
+                # Verificar que el job_id corresponde al trabajo dentro de la orden
+                job_exists = self.collection.count_documents(filter) > 0
+                if not job_exists:
+                    print(
+                        "El job_id proporcionado no corresponde a ningún trabajo en la orden.")
+                    return
+
+                # Borrar parámetros del trabajo
+                update = {"$pull": {"jobs.$.params": {}}}
+                self.collection.update_one(filter, update)
+
+                # Agregar nuevos parámetros al trabajo
+                # Aquí asumimos que params es una lista de parámetros que deseas agregar
+                # Puedes ajustar este código según la estructura de tus datos.
+                if params:
+                    update = {"$push": {"jobs.$.params": {"$each": params}}}
+                    self.collection.update_one(filter, update)
+
+                print("Actualización de parámetros completada con éxito.")
+
+                return self.get_params(order_id, job_id)
+        except Exception as e:
+            session.abort_transaction()  # Abortar la transacción en caso de error
+            raise e
+        finally:
+            session.end_session()  # Finalizar la sesión

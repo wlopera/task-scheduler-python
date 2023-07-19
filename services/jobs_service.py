@@ -96,14 +96,14 @@ class JobService(TemplateInterface):
                 self.collection.update_one(
                     filter, update, array_filters=array_filters)
 
-                # Actualizar el campo "next" en las cadenas donde "next" sea "task2"
+                # Actualizar el campo "next" en las cadenas
                 filter1 = {"_id": ObjectId(order_id), "chains.next": old_name}
                 update1 = {"$set": {"chains.$[elem].next": new_name}}
                 array_filters1 = [{"elem.next": old_name}]
                 self.collection.update_many(
                     filter1, update1, array_filters=array_filters1)
 
-                # Actualizar el campo "name" en las cadenas donde "name" sea "task2"
+                # Actualizar el campo "name" en las cadenas
                 filter2 = {"_id": ObjectId(order_id), "chains.name": old_name}
                 update2 = {"$set": {"chains.$[elem].name": new_name}}
                 array_filters2 = [{"elem.name": old_name}]
@@ -137,15 +137,3 @@ class JobService(TemplateInterface):
         self.collection.update_one(filter, update)
 
         return self.get(order_id)
-
-    def get_chains(self, order_id):
-        filter = {"_id": ObjectId(order_id)}
-        response = self.collection.find(filter)
-        json_response = [json.dumps(item, default=str) for item in response]
-        chains = []
-        for item in json_response:
-            obj = json.loads(item)
-            for record in obj['chains']:
-                chains.append(record)
-
-        return chains

@@ -13,7 +13,8 @@ from util.constants import PATH_FOLDERS_ORDER, FILE_PARAM_JSON, FILE_ORDERS_JSON
 
 chains_routes = Blueprint('chains_routes', __name__, url_prefix='/api/chains')
 chain_service = None  # Variable estática para almacenar el servicio de tareas
-clientMongoDB = None  # Variable estática para almacenar el cliente de MongoDB para trassaciones
+# Variable estática para almacenar el cliente de MongoDB para trassaciones
+clientMongoDB = None
 
 
 @chains_routes.record
@@ -58,7 +59,7 @@ def modify_chain():
         param = request.get_json()
         order_id = param['order_id']
         chains = param['chains']
-    
+
         chain_service.modify(order_id, chains)
 
         return get_chains(order_id)
@@ -66,18 +67,33 @@ def modify_chain():
         return ServiceUtils.error(e)
 
 
-# @chains_routes.route('/params', methods=['POST'])
-# def params_job():
-#     try:
-#         param = request.get_json()
-#         order_id = param['order_id']
-#         job_id = param['job_id']
+@chains_routes.route('/params', methods=['POST'])
+def params_job():
+    try:
+        param = request.get_json()
+        order_id = param['order_id']
+        job_id = param['job_id']
 
-#         response = get_params(order_id, job_id)
+        response = chain_service.get_params(order_id, job_id)
 
-#         return ServiceUtils.success(response)
-#     except Exception as e:
-#         return ServiceUtils.error(e)
+        return ServiceUtils.success(response)
+    except Exception as e:
+        return ServiceUtils.error(e)
+
+
+@chains_routes.route('/update_params', methods=['POST'])
+def update_params():
+    try:
+        param = request.get_json()
+        order_id = param['order_id']
+        job_id = param['job_id']
+        params = param['params']
+        print(12345, order_id, job_id, params)
+        response = chain_service.update_params(order_id, job_id, params)
+
+        return ServiceUtils.success({"data": {}})
+    except Exception as e:
+        return ServiceUtils.error(e)
 
 
 # @chains_routes.route('/update_params', methods=['POST'])
@@ -142,26 +158,6 @@ def modify_chain():
 #         return ServiceUtils.success({"data": response})
 #     except Exception as e:
 #         return ServiceUtils.error(e)
-
-
-# def get_chains(name):
-#     chains = JsonUtils.read_json(
-#         f"{PATH_FOLDERS_ORDER}/{name}/{FILE_PARAM_JSON}")
-#     positions = []
-#     for i, obj in enumerate(chains):
-#         obj["id"] = i + 1
-#         positions.append(i+1)
-
-#     options = [item["name"] for item in chains]
-#     options.append("exito")
-#     options.append("error")
-
-#     return {"data": chains, "options": options, "positions": positions}
-
-
-# def get_params(order_id, job_id):
-#     return JsonUtils.read_json(f"{PATH_FOLDERS_ORDER}/{order_id}/{NAME_JOBS}/{job_id}/{FILE_PARAM_JSON}")
-
 
 # def get_history():
 #     return JsonUtils.read_json(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}")
