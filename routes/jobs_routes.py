@@ -6,8 +6,6 @@ from services.jobs_service import JobService
 
 jobs_routes = Blueprint('jobs_routes', __name__, url_prefix='/api/jobs')
 job_service = None  # Variable estática para almacenar el servicio de tareas
-# Variable estática para almacenar el cliente de MongoDB para trassaciones
-clientMongoDB = None
 
 
 @jobs_routes.record
@@ -80,11 +78,7 @@ def delete_job():
 @jobs_routes.route('/chains/<string:order_id>', methods=['POST'])
 def get_chains(order_id):
     try:
-        print(1111, order_id)
         result = job_service.get_chains(order_id)
-        print(5555, result)
-        
-        
         return ServiceUtils.success({"data": result})
     except Exception as e:
         return ServiceUtils.error(e)

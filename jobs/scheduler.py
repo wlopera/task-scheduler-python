@@ -5,15 +5,8 @@ class Scheduler:
         self.order = order
         self.logger=None
         
-    def update_param(self, path_param):
-        param={}
-        #self.logger.info('Mensaje desde Scheduler')
-        # Abrir el archivo JSON en modo lectura
-        with open(path_param + "/param.json", 'r') as file:
-            # Cargar el contenido del archivo JSON
-            param = json.load(file)
-        
-        for item in param['params']:
+    def update_param(self, params):
+        for item in params:
             filter = [objeto for objeto in self.order if objeto["name"] == item['name']]
             if len(filter) > 0:                
                 for objeto in filter:

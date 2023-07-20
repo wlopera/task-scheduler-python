@@ -6,8 +6,8 @@ MONGO_DB_COLLECTION_ORDERS = "orders"
 MONGO_DB_TIMEOUT = 300  # en segundos
 
 # Ordenes
-PATH_FOLDERS_ORDER = "JobScheduler/backend/orders"
-PATH_LOG = "JobScheduler/backend/log/"
+PATH_FOLDERS_ORDER = "backend/orders"
+PATH_LOG = "backend/log/"
 FILE_PARAM_JSON = "param.json"
 FILE_ORDERS_JSON = "orders.json"
 NAME_JOBS = "jobs"
