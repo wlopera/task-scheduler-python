@@ -2,15 +2,13 @@ from flask import Blueprint, request
 from spooler_task import SpoolerTask
 import traceback
 
-from util.json_utils import JsonUtils
 from util.service_utils import ServiceUtils
 from helpers.chains_helper import ChainsHelper
 
-from util.constants import MONGO_DB_COLLECTION_ORDERS, MONGO_DB_COLLECTION_HISTORICAL
+from util.constants import MONGO_DB_COLLECTION_ORDERS, MONGO_DB_COLLECTION_HISTORICAL, MONGO_DB_COLLECTION_LOGS
 from services.chain_service import ChainService
 from services.process.scheduler_service import SchedulerService
 
-from util.constants import PATH_FOLDERS_ORDER, FILE_PARAM_JSON, FILE_ORDERS_JSON, NAME_JOBS, PATH_LOG
 
 chains_routes = Blueprint('chains_routes', __name__, url_prefix='/api/chains')
 chain_service = None  # Variable estática para almacenar el servicio de tareas
@@ -20,8 +18,8 @@ scheduler_service = None  # Variable estática para almacenar el servicio de sch
 @chains_routes.record
 def initialize_service(state):
     """
-        El decorador @orders_routes.record es específico de Flask y se utiliza para registrar una función de configuración 
-        que se ejecuta cuando se registra el blueprint orders_routes. 
+        El decorador @orders_routes.record es específico de Flask y se utiliza para registrar una función de configuración
+        que se ejecuta cuando se registra el blueprint orders_routes.
     """
     global chain_service, scheduler_service
 
@@ -36,7 +34,8 @@ def initialize_service(state):
 
     # Creo una instancia de la clase scheduler_service
     scheduler_service = SchedulerService(
-        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS, MONGO_DB_COLLECTION_HISTORICAL, clientMongoDB)
+        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS, MONGO_DB_COLLECTION_HISTORICAL,
+        MONGO_DB_COLLECTION_LOGS, clientMongoDB)
 
 
 @chains_routes.route('/<string:order_id>', methods=['POST'])
@@ -105,7 +104,6 @@ def update_params():
 def history():
     try:
         response = scheduler_service.get_historical()
-        print(3333, response)
         # response.sort(key=lambda x: x['startDate'], reverse=True)
         return ServiceUtils.success({"data": response})
     except Exception as e:
@@ -123,7 +121,7 @@ def process(order_id):
         values = ChainsHelper.create_record(
             order_id, spooler.current_job, spooler.log_name)
 
-        #JsonUtils.add_item(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}", values)
+        # JsonUtils.add_item(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}", values)
 
         id = scheduler_service.add_historical(values)
         print("id: ", id, values)
@@ -144,6 +142,33 @@ def process(order_id):
         return ServiceUtils.error(e)
 
 
+@chains_routes.route('/log/<string:name>', methods=['POST'])
+def log_data(name):
+    try:
+        response = scheduler_service.get_logs(name)
+        return ServiceUtils.success({"data": response})
+    except Exception as e:
+        return ServiceUtils.error(e)
+
+
+@ chains_routes.route('/delete_historical', methods=['POST'])
+def delete_historical():
+    try:
+        scheduler_service.delete_all_historical()
+        return ServiceUtils.success({})
+    except Exception as e:
+        return ServiceUtils.error(e)
+
+
+@ chains_routes.route('/delete_logs', methods=['POST'])
+def delete_logs():
+    try:
+        scheduler_service.delete_all_logs()
+        return ServiceUtils.success({})
+    except Exception as e:
+        return ServiceUtils.error(e)
+
+
 def process_record(logger, values, type):
     if type == "SUCCESS":
         values = ChainsHelper.update_record(values, "exitoso", "success")
@@ -151,38 +176,9 @@ def process_record(logger, values, type):
     else:
         values = ChainsHelper.update_record(values, "fallido", "error")
         logger.info("Proceso termino con error.")
-
-    # JsonUtils.update_item(
-    #     PATH_FOLDERS_ORDER + "/" + FILE_ORDERS_JSON, 'id', values['id'], values)
-    
     scheduler_service.update_historical(values)
 
     handlers = logger.handlers[:]
     for handler in handlers:
         logger.removeHandler(handler)
         handler.close()
-
-
-# @chains_routes.route('/log/<string:name>', methods=['POST'])
-# def log_data(name):
-#     try:
-#         response = JsonUtils.read_log_file(f"{PATH_LOG}/{name}")
-#         return ServiceUtils.success(response)
-#     except Exception as e:
-#         return ServiceUtils.error(e)
-
-
-# @chains_routes.route('/history')
-# def history():
-#     try:
-#         response = get_history()
-#         response.sort(key=lambda x: x['startDate'], reverse=True)
-#         return ServiceUtils.success({"data": response})
-#     except Exception as e:
-#         return ServiceUtils.error(e)
-
-# def get_history():
-#     return JsonUtils.read_json(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}")
-
-# def get_history():
-#     return JsonUtils.read_json(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}")

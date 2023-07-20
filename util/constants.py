@@ -4,6 +4,7 @@ MONGO_DB_PORT = 27017
 MONGO_DB_NAME = "scheduler"
 MONGO_DB_COLLECTION_ORDERS = "orders"
 MONGO_DB_COLLECTION_HISTORICAL = "historical"
+MONGO_DB_COLLECTION_LOGS = "app_logs"
 MONGO_DB_TIMEOUT = 300  # en segundos
 
 # Ordenes

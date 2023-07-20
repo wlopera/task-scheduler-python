@@ -2,14 +2,7 @@ import sys
 import importlib
 from util.logger import setup_logger
 from datetime import datetime
-from util.json_utils import JsonUtils
-from util.constants import PATH_FOLDERS_ORDER, FILE_PARAM_JSON
 import time
-
-from util.constants import MONGO_DB_COLLECTION_ORDERS
-from services.jobs_service import JobService
-from services.process.scheduler_service import SchedulerService
-
 
 class SpoolerTask:
 
@@ -18,12 +11,11 @@ class SpoolerTask:
         self.current_order = {}
         self.jobs = {}
         self.current_job = None
-        # self.logger = setup_logger("scheduler", "Scheduler-" + datetime.now().strftime('%Y%m%d%H%M%S'))
-        # self.log_name = "Scheduler-" + datetime.now().strftime('%Y%m%d')
         self.log_name = "Scheduler-" + datetime.now().strftime('%Y%m%d%H%M%S')
-        self.logger = setup_logger("scheduler", self.log_name)
+        self.logger = setup_logger(self.log_name, scheduler_service)
         self.logger.info(
             "#----------------------- Inicia proceso de Scheduler")
+        scheduler_service
 
     def get_order(self, order_id):
         self.current_order = self.scheduler_service.get_order(order_id)
@@ -35,8 +27,8 @@ class SpoolerTask:
             if job['name'] == name:
                 return job
         return None
-    
-    def get_params(self, current_job):        
+
+    def get_params(self, current_job):
         for job in self.current_order['jobs']:
             if job['_id'] == current_job['_id']:
                 return job['params']
@@ -71,18 +63,18 @@ class SpoolerTask:
             params = self.get_params(job)
             # print("job:", job)
             # print("params:", params)
-            
+
             instance.update_param(instance, params)
             result = instance.spooler_process(instance)
             self.logger.info(f"Resultado: {result}")
             if result == False:
                 print("Error salida del app")
-                self.logger.error("Error salida del app: ", self.current_job)
+                self.logger.error(f"Error salida del app: {self.current_job}")                
                 raise Exception("Error salida del app: ", self.current_job)
                 # sys.exit()
             else:
                 print("Proceso exitoso...!")
-                self.logger.info("Proceso exitoso: ", self.current_job)
+                self.logger.info(f"Proceso exitoso: {self.current_job}")
                 self.current_job = job['next']
                 print("")
         except ImportError as err:
