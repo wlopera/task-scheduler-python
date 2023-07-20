@@ -6,7 +6,7 @@ from util.json_utils import JsonUtils
 from util.service_utils import ServiceUtils
 from helpers.chains_helper import ChainsHelper
 
-from util.constants import MONGO_DB_COLLECTION_ORDERS
+from util.constants import MONGO_DB_COLLECTION_ORDERS, MONGO_DB_COLLECTION_HISTORICAL
 from services.chain_service import ChainService
 from services.process.scheduler_service import SchedulerService
 
@@ -36,7 +36,7 @@ def initialize_service(state):
 
     # Creo una instancia de la clase scheduler_service
     scheduler_service = SchedulerService(
-        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS, clientMongoDB)
+        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS, MONGO_DB_COLLECTION_HISTORICAL, clientMongoDB)
 
 
 @chains_routes.route('/<string:order_id>', methods=['POST'])
@@ -104,9 +104,10 @@ def update_params():
 @chains_routes.route('/history')
 def history():
     try:
-        # response = get_history()
+        response = scheduler_service.get_historical()
+        print(3333, response)
         # response.sort(key=lambda x: x['startDate'], reverse=True)
-        return ServiceUtils.success({"data": []})
+        return ServiceUtils.success({"data": response})
     except Exception as e:
         return ServiceUtils.error(e)
 
@@ -122,7 +123,10 @@ def process(order_id):
         values = ChainsHelper.create_record(
             order_id, spooler.current_job, spooler.log_name)
 
-        JsonUtils.add_item(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}", values)
+        #JsonUtils.add_item(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}", values)
+
+        id = scheduler_service.add_historical(values)
+        print("id: ", id, values)
 
         spooler.process()
 
@@ -148,8 +152,10 @@ def process_record(logger, values, type):
         values = ChainsHelper.update_record(values, "fallido", "error")
         logger.info("Proceso termino con error.")
 
-    JsonUtils.update_item(
-        PATH_FOLDERS_ORDER + "/" + FILE_ORDERS_JSON, 'id', values['id'], values)
+    # JsonUtils.update_item(
+    #     PATH_FOLDERS_ORDER + "/" + FILE_ORDERS_JSON, 'id', values['id'], values)
+    
+    scheduler_service.update_historical(values)
 
     handlers = logger.handlers[:]
     for handler in handlers:

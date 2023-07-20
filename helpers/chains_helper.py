@@ -1,4 +1,5 @@
 from datetime import datetime
+from bson import ObjectId
 
 
 class ChainsHelper:
@@ -16,7 +17,7 @@ class ChainsHelper:
     @staticmethod
     def create_record(name, node, log):
         return {
-            "id": datetime.now().strftime('%Y%m%d%H%M%S'),
+            "id": ObjectId(),
             "order_id": name,
             "status": "iniciado",
             "startDate": datetime.now().strftime('%d/%m/%Y-%H:%M:%S'),

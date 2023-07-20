@@ -1,0 +1,31 @@
+2023-07-20 11:21:39,270 - scheduler - INFO - #----------------------- Inicia proceso de Scheduler
+2023-07-20 11:21:39,271 - scheduler - INFO - Orden a procesar 64b826ccafae065e70f271a2
+2023-07-20 11:21:39,951 - scheduler - INFO - detener................
+2023-07-20 11:21:44,951 - scheduler - INFO - continuar................
+2023-07-20 11:21:44,971 - scheduler - INFO - Modulo: <module 'jobs.sendEmail.send_email' from 'd:\\WorkSpace\\WS_PERSONAL_PROGRAMS\\TaskScheduler\\backend\\jobs\\sendEmail\\send_email.py'>
+2023-07-20 11:21:44,972 - scheduler - INFO - Instancia: <class 'jobs.sendEmail.send_email.SendEmail'>
+2023-07-20 11:21:44,972 - scheduler - INFO - Enviar correo
+2023-07-20 11:21:44,972 - scheduler - INFO - send email: smtp.googlemail.com
+2023-07-20 11:21:46,931 - scheduler - INFO - Correo enviado correctamente
+2023-07-20 11:21:46,931 - scheduler - INFO - Finalizo el envio
+2023-07-20 11:21:46,932 - scheduler - INFO - Resultado: True
+2023-07-20 11:21:46,958 - scheduler - INFO - Scheduler finalizado con exito
+2023-07-20 11:21:46,961 - scheduler - INFO - Proceso termino exitosamente.
+2023-07-20 11:21:46,968 - scheduler - ERROR - Error.........................: '20230720112139' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+Traceback (most recent call last):
+  File "d:\WorkSpace\WS_PERSONAL_PROGRAMS\TaskScheduler\backend\routes\chains_routes.py", line 132, in process
+    process_record(spooler.logger, values, "SUCCESS")
+  File "d:\WorkSpace\WS_PERSONAL_PROGRAMS\TaskScheduler\backend\routes\chains_routes.py", line 157, in process_record
+    scheduler_service.update_historical(values)
+  File "d:\WorkSpace\WS_PERSONAL_PROGRAMS\TaskScheduler\backend\services\process\scheduler_service.py", line 29, in update_historical
+    filter = {"_id": ObjectId(data['id'])}
+                     ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python311\Lib\site-packages\bson\objectid.py", line 102, in __init__
+    self.__validate(oid)
+  File "C:\Python311\Lib\site-packages\bson\objectid.py", line 201, in __validate
+    _raise_invalid_id(oid)
+  File "C:\Python311\Lib\site-packages\bson\objectid.py", line 34, in _raise_invalid_id
+    raise InvalidId(
+bson.errors.InvalidId: '20230720112139' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string
+
+2023-07-20 11:21:46,968 - scheduler - INFO - Proceso termino con error.

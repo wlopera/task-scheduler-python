@@ -35,11 +35,11 @@ class OrderService(TemplateInterface):
     def modify(self, old_item, new_item):
         
         # Definir los criterios de búsqueda para encontrar los documentos a actualizar
-        filtro = {"_id": ObjectId(old_item['id'])}
+        filter = {"_id": ObjectId(old_item['id'])}
 
         # Actualizar el valor en la tabla utilizando el método update_one()
         result = self.collection.update_one(
-            filtro, {"$set": {"name": new_item['name']}})
+            filter, {"$set": {"name": new_item['name']}})
 
         if result.modified_count:
             print("Documento modificado exitosamente.")

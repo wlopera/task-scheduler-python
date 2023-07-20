@@ -44,7 +44,7 @@ class SpoolerTask:
 
     def process(self):
         self.logger.info("detener................")
-        time.sleep(5)
+        time.sleep(20)
         self.logger.info("continuar................")
         # Iniciar el procesamiento de tareas
         for iterator in range(len(self.current_chains)):
@@ -52,14 +52,12 @@ class SpoolerTask:
         self.logger.info("Scheduler finalizado con exito")
 
     def process_job(self, job):
-        print("JOB: ", job)
         package_job = "jobs." + job['package']
         class_job = job['class']
 
         # print("--------------------------------------------")
-        print("Package:" + package_job)
-        print("Class:" + class_job)
-       
+        # print("Package:" + package_job)
+        # print("Class:" + class_job)
 
         try:
             module = importlib.import_module(package_job)
@@ -71,8 +69,8 @@ class SpoolerTask:
 
             # Actualizar parametros de la orden con los de la tarea
             params = self.get_params(job)
-            print("job:", job)
-            print("params:", params)
+            # print("job:", job)
+            # print("params:", params)
             
             instance.update_param(instance, params)
             result = instance.spooler_process(instance)
