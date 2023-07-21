@@ -28,7 +28,7 @@ class OrderService(TemplateInterface):
 
         self.activate(orders, result.inserted_id)
 
-        # print("ordenes nuevas: ", orders)
+        print("ordenes nuevas: ", orders)
 
         return orders
 

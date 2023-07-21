@@ -1,0 +1,226 @@
+class Persona:
+    def __init__(self, nombre, edad, genero, numero_pasaporte):
+        self.nombre = nombre
+        self.edad = edad
+        self.genero = genero
+        self.numero_pasaporte = numero_pasaporte
+
+# Creamos los objetos de la clase Persona
+persona1 = Persona("Juan", 30, "Masculino", "AB12345")
+persona2 = Persona("María", 25, "Femenino", "CD67890")
+persona3 = Persona("Pedro", 28, "Masculino", "EF24680")
+persona4 = Persona("Ana", 22, "Femenino", "GH13579")
+
+# Creamos una lista con los objetos
+personas = [persona1, persona2, persona3, persona4]
+
+# crear filtro de personas mayores a 26 años de edad.
+
+respuesta:
+
+records = [persona for persona in personas if persona.edad > 26]
+
+records: Es el nombre de la lista que se va a crear.
+
+persona: Es la variable temporal que recorrerá cada elemento en la lista personas. En cada iteración, persona representa uno de los objetos de
+		 la clase Persona que se encuentran en la lista personas.
+
+for persona in personas: Indica que vamos a recorrer todos los elementos de la lista personas y que, en cada iteración, 
+			persona representará uno de esos elementos.
+
+if persona.edad > 26: Es la condición que se evalúa en cada iteración del bucle for. Esta condición determina si el objeto persona actual 
+					  tiene una edad mayor a 26 años.
+
+[persona for persona in personas if persona.edad > 26]: Es la comprensión de lista, que crea una nueva lista con los objetos persona que cumplen 
+la condición persona.edad > 26.
+
+En resumen, la línea de código se leería de la siguiente manera:
+
+"Crea una nueva lista llamada records que contendrá cada objeto persona en la lista personas, siempre y cuando la edad del objeto persona sea mayor que 26 años."
+
+Espero que esta descripción formal te sea útil para comprender el funcionamiento de la comprensión de lista y cómo se utiliza 
+para filtrar objetos en base a una condición específica. Si tienes más preguntas o necesitas más aclaraciones, no dudes en preguntar. ¡Estoy aquí para ayudarte!
+
+
+ahora hagamos lo siguiente en la lista original de personas. como podemos en una sola linea crear un diccionario que solo contenga Personas femeninas:
+
+te recuerdo:
+
+# Creamos los objetos de la clase Persona
+persona1 = Persona("Juan", 30, "Masculino", "AB12345")
+persona2 = Persona("María", 25, "Femenino", "CD67890")
+persona3 = Persona("Pedro", 28, "Masculino", "EF24680")
+persona4 = Persona("Ana", 22, "Femenino", "GH13579")
+
+# Creamos una lista con los objetos
+personas = [persona1, persona2, persona3, persona4]
+
+respuesta: 
+lista = [elemento for elemento in iterable if condicion]
+
+personas_femeninas = {persona.nombre: persona for persona in personas if persona.genero == "Femenino"}
+
+quí, la comprensión de diccionario crea un nuevo diccionario diccionario con pares de clave-valor que cumplen la condición especificada.
+
+La única diferencia entre ambas es el tipo de delimitador que utilizan para crear los resultados: los corchetes [ ] para las listas y las llaves { } para los diccionarios.
+
+for nombre, persona in personas_femeninas.items():
+    print(f"Nombre: {nombre}")
+	print(f"Persona: {persona}")
+	
+daria como resultado, algo como esto:
+
+Nombre: María,  
+Persona: {Nombre: María,  Edad: 25,  Género: Femenino, Número de Pasaporte: CD67890}
+
+Nombre: Ana
+Persona: {Nombre: Ana,  Edad: 22,  Género: Femenino, Número de Pasaporte: GH13579}
+
+
+for nombre, persona in personas_femeninas.items():
+    print(f"Nombre: {nombre}")
+    print(f"Persona: {persona}")
+	
+pero como podria hacer para que me extraiga los valores de Persona y no imprima el objeto: Persona: <__main__.Persona object at 0x7f55dfbf35b0>
+
+eso te lo entiendo pero insisto no existe una forma de imprimi r o extraer directamente los valores del diccionario, algo asi como:
+
+for nombre, persona in personas_femeninas.items():
+    print(f"Persona: {persona}")
+	
+y que me de un json o algo equivalente:
+{
+	Nombre: María,  
+	Edad: 25,  
+	Género: Femenino, 
+	Número de Pasaporte: CD67890
+}
+
+
+Imprimir Diccionario como lista interna:
+
+for nombre, persona in personas_femeninas.items():
+    persona_dict = persona.__dict__
+    print(persona_dict)
+	
+{'nombre': 'María', 'edad': 25, 'genero': 'Femenino', 'numero_pasaporte': 'CD67890'}
+{'nombre': 'Ana', 'edad': 22, 'genero': 'Femenino', 'numero_pasaporte': 'GH13579'}	
+
+En Python, __dict__ es un atributo especial que contiene un diccionario que representa los atributos y valores de una instancia de una clase. 
+Cada vez que creas una instancia de una clase (como la clase Persona que has definido), se crea un diccionario interno que mapea los nombres 
+de los atributos a sus respectivos valores para esa instancia.
+
+Cuando usas persona.__dict__, estás accediendo a este diccionario interno, que contiene la información de los atributos y sus valores para
+la instancia específica persona.
+
+for nombre, persona in personas_femeninas.items():
+    persona_dict = persona.__dict__
+    print(json.dumps(persona_dict, indent=4))
+	
+{
+    "nombre": "María",
+    "edad": 25,
+    "genero": "Femenino",
+    "numero_pasaporte": "CD67890"
+}
+
+{
+    "nombre": "Ana",
+    "edad": 22,
+    "genero": "Femenino",
+    "numero_pasaporte": "CD67890"
+}
+	
+	
+JSON (JavaScript Object Notation) es un formato de intercambio de datos que se utiliza para transmitir y almacenar datos estructurados entre diferentes plataformas.
+ En Python, el módulo json proporciona funciones para trabajar con datos en formato JSON, incluyendo json.dumps() y json.loads().
+
+json.dumps(): Esta función se utiliza para convertir un objeto Python en una cadena JSON. Toma un objeto Python, como un diccionario o una lista, 
+y lo convierte en su representación JSON como una cadena.
+Ejemplo de uso de json.dumps():
+
+python
+Copy code
+import json
+
+# Crear un diccionario Python
+datos = {
+    "nombre": "Juan",
+    "edad": 30,
+    "ciudad": "México"
+}
+
+# Convertir el diccionario en una cadena JSON
+cadena_json = json.dumps(datos)
+
+print(cadena_json)
+Salida:
+
+json
+Copy code
+{"nombre": "Juan", "edad": 30, "ciudad": "México"}
+
+
+json.loads(): Esta función se utiliza para convertir una cadena JSON en un objeto Python. Toma una cadena JSON y la convierte en un diccionario, lista u otro tipo de objeto Python.
+Ejemplo de uso de json.loads():
+
+python
+Copy code
+import json
+
+# Una cadena JSON
+cadena_json = '{"nombre": "María", "edad": 25, "genero": "Femenino"}'
+
+# Convertir la cadena JSON en un diccionario Python
+datos = json.loads(cadena_json)
+
+print(datos)
+Salida:
+
+arduino
+Copy code
+{'nombre': 'María', 'edad': 25, 'genero': 'Femenino'}
+En este ejemplo, json.loads() convierte la cadena JSON en un diccionario Python, que podemos usar como cualquier otro diccionario en Python.
+
+Estas funciones son útiles para trabajar con datos en formato JSON en Python, ya que nos permiten convertir datos entre objetos Python y cadenas JSON, facilitando la comunicación y el intercambio de información con otras aplicaciones o servicios que utilizan JSON para representar los datos.
+
+Espero que esta explicación te sea útil. Si tienes más preguntas o necesitas más aclaraciones, no dudes en preguntar. ¡Estoy aquí para ayudarte!
+
+
+En resumen, la diferencia principal es que el diccionario Python es una estructura de datos en memoria que Python puede manipular directamente, 
+mientras que el JSON impreso es una representación en forma de texto del diccionario que puede ser compartida y utilizada de manera más amplia en 
+diferentes contextos.
+
+La función json.loads() es útil cuando recibes datos en formato JSON desde una fuente externa, como una API web, un archivo JSON o una comunicación 
+con otra aplicación. Al usar json.loads(), puedes convertir esos datos en una estructura de datos que Python pueda manejar y utilizar para procesar 
+y trabajar con la información.
+
+
+
+MongoDB:
+Cuando consultas datos de MongoDB, los datos se devuelven en formato BSON (Binary JSON). BSON es un formato binario que es similar al formato JSON, 
+pero está optimizado para el almacenamiento y recuperación de datos en MongoDB.
+
+BSON es utilizado por MongoDB como su formato de intercambio de datos. Permite que los datos sean almacenados y transmitidos de manera más eficiente 
+y compacta en comparación con JSON, ya que BSON es una representación binaria que puede ser serializada y deserializada de manera más rápida.
+
+Aunque BSON es el formato nativo utilizado por MongoDB para almacenar y transmitir datos, muchas bibliotecas y controladores de MongoDB pueden convertir 
+automáticamente los datos de BSON a formato JSON cuando se accede a través de lenguajes de programación como Python. Esto permite que los datos de MongoDB 
+En resumen, al utilizar "pymongo" en Python para consultar MongoDB, normalmente obtendrás los datos como diccionarios de Python y no necesitarás 
+usar json.dumps() para convertirlos a formato JSON.
+
+Sin embargo, si necesitas transmitir o guardar los datos en formato JSON para ser utilizados por otras aplicaciones o servicios que esperan datos en
+ formato JSON, en ese caso, podrías utilizar json.dumps() para convertir manualmente los diccionarios a cadenas JSON antes de enviarlos o almacenarlos.
+se puedan manipular y procesar de manera más sencilla y familiar para los desarrolladores.
+
+
+	
+Carpetas para JobScheduler:  /services/sos-berlin.com/binaries/scheduler-ccb/bin/jobscheduler.sh
+
+Carpeta para Jetty: /services/sos-berlin.com/joc/jetty/bin/jetty.sh
+
+------------------------------------------------------------------------------------------------------------------------------------
+Detener y Lanzar JobScheduler/Joc
+------------------------------------------------------------------------------------------------------------------------------------
+sos-berlin.com/binaries/scheduler1/bin/> ./jobscheduler.sh stop/start  <->  [sh jobscheduler.sh stop/start]
+sos-berlin.com/joc/jetty/bin/> ./jetty.sh stop/start <->  [sh jetty.sh stop/start]
