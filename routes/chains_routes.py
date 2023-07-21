@@ -92,7 +92,6 @@ def update_params():
         order_id = param['order_id']
         job_id = param['job_id']
         params = param['params']
-        print(12345, order_id, job_id, params)
         chain_service.update_params(order_id, job_id, params)
 
         return ServiceUtils.success({"data": {}})
@@ -122,8 +121,7 @@ def process(order_id):
             order_id, spooler.current_job, spooler.log_name)
 
         id = scheduler_service.add_historical(values)
-        print("id: ", id, values)
-
+        
         spooler.process()
 
         process_record(spooler.logger, values, "SUCCESS")
