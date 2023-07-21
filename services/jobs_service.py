@@ -21,15 +21,11 @@ class JobService(TemplateInterface):
     def add(self, name, order_id):
         # Iniciar una sesión transaccional de MongoDB
         session = self.clientMongoDB.start_session()
-        print(111, order_id, session)
-        try:
-            print(111222, order_id, session)
-            
+        try:           
             with session.start_transaction():  # Iniciar una transacción
 
                 # -----  NUEVO JOB
-                print(2222, order_id)
-
+            
                 # Filtra el documento con la orden "id":
                 filter = {"_id": ObjectId(order_id)}
                 item_id = ObjectId(),
@@ -60,7 +56,6 @@ class JobService(TemplateInterface):
                     "error": "error"
                 }
 
-                print(3333, order_id)
                 # Agrega el nuevo objeto "job" al arreglo "jobs"
                 update = {"$push": {"chains": new_chain}}
 
@@ -71,11 +66,9 @@ class JobService(TemplateInterface):
                 self.activate(jobs, item_id[0])
                 return jobs
         except Exception as e:
-            print(444444)
             session.abort_transaction()  # Abortar la transacción en caso de error
             raise e
         finally:
-            print(55555)
             session.end_session()  # Finalizar la sesión
 
     def modify(self, order_id, old_item, new_item):

@@ -121,8 +121,6 @@ def process(order_id):
         values = ChainsHelper.create_record(
             order_id, spooler.current_job, spooler.log_name)
 
-        # JsonUtils.add_item(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}", values)
-
         id = scheduler_service.add_historical(values)
         print("id: ", id, values)
 

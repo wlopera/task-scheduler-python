@@ -7,9 +7,5 @@ MONGO_DB_COLLECTION_HISTORICAL = "historical"
 MONGO_DB_COLLECTION_LOGS = "app_logs"
 MONGO_DB_TIMEOUT = 300  # en segundos
 
-# Ordenes
-PATH_FOLDERS_ORDER = "backend/orders"
+# Path
 PATH_LOG = "backend/log/"
-FILE_PARAM_JSON = "param.json"
-FILE_ORDERS_JSON = "orders.json"
-NAME_JOBS = "jobs"

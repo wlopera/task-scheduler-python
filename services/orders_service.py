@@ -28,7 +28,7 @@ class OrderService(TemplateInterface):
 
         self.activate(orders, result.inserted_id)
 
-        print("ordenes nuevas: ", orders)
+        # print("ordenes nuevas: ", orders)
 
         return orders
 
@@ -41,10 +41,10 @@ class OrderService(TemplateInterface):
         result = self.collection.update_one(
             filter, {"$set": {"name": new_item['name']}})
 
-        if result.modified_count:
-            print("Documento modificado exitosamente.")
-        else:
-            print("No se encontró el documento con el ID:", old_item['id'])
+        # if result.modified_count:
+        #     print("Documento modificado exitosamente.")
+        # else:
+        #     print("No se encontró el documento con el ID:", old_item['id'])
 
         orders = self.get()
 
