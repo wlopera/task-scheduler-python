@@ -1,9 +1,0 @@
-[
-    {
-        "name": "mail",
-        "package": "sendEmail.send_email",
-        "class": "SendEmail",
-        "next": "exito",
-        "error": "error"
-    }
-]

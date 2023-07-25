@@ -2,19 +2,57 @@ from flask import Blueprint, request
 from spooler_task import SpoolerTask
 import traceback
 
-from util.json_utils import JsonUtils
 from util.service_utils import ServiceUtils
 from helpers.chains_helper import ChainsHelper
-from util.constants import PATH_FOLDERS_ORDER, FILE_PARAM_JSON, FILE_ORDERS_JSON, NAME_JOBS, PATH_LOG
+
+from util.constants import MONGO_DB_COLLECTION_ORDERS, MONGO_DB_COLLECTION_HISTORICAL, MONGO_DB_COLLECTION_LOGS
+from services.chain_service import ChainService
+from services.process.scheduler_service import SchedulerService
+
 
 chains_routes = Blueprint('chains_routes', __name__, url_prefix='/api/chains')
+chain_service = None  # Variable estática para almacenar el servicio de tareas
+scheduler_service = None  # Variable estática para almacenar el servicio de scheduler
 
 
-@chains_routes.route('/<string:name>', methods=['POST'])
-def chains(name):
+@chains_routes.record
+def initialize_service(state):
+    """
+        El decorador @orders_routes.record es específico de Flask y se utiliza para registrar una función de configuración
+        que se ejecuta cuando se registra el blueprint orders_routes.
+    """
+    global chain_service, scheduler_service
+
+    # Obtener la instancia de la conexión a MongoDB de la configuración de la aplicación
+    mongo_db_connection = state.app.config.get('DATABASE')
+    # Obtenemos el clinete de mongoDB para procesos transaccionales
+    clientMongoDB = state.app.config.get('CLIENT')
+
+    # Creo una instancia de la clase chain_service
+    chain_service = ChainService(
+        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS, clientMongoDB)
+
+    # Creo una instancia de la clase scheduler_service
+    scheduler_service = SchedulerService(
+        mongo_db_connection, MONGO_DB_COLLECTION_ORDERS, MONGO_DB_COLLECTION_HISTORICAL,
+        MONGO_DB_COLLECTION_LOGS, clientMongoDB)
+
+
+@chains_routes.route('/<string:order_id>', methods=['POST'])
+def get_chains(order_id):
     try:
-        response = get_chains(name)
-        return ServiceUtils.success(response)
+        chains = chain_service.get(order_id)
+
+        positions = []
+        for i, obj in enumerate(chains):
+            obj["position"] = i + 1
+            positions.append(i+1)
+
+        options = [item["name"] for item in chains]
+        options.append("exito")
+        options.append("error")
+
+        return ServiceUtils.success({"data": chains, "options": options, "positions": positions})
     except Exception as e:
         return ServiceUtils.error(e)
 
@@ -24,27 +62,11 @@ def modify_chain():
     try:
         param = request.get_json()
         order_id = param['order_id']
-        old_position = int(param['old_id']) - 1
-        new_position = int(param['id']) - 1
+        chains = param['chains']
 
-        data = ChainsHelper.getDataBase(param)
+        chain_service.modify(order_id, chains)
 
-        JsonUtils.remove_item_by_position(
-            f"{PATH_FOLDERS_ORDER}/{order_id}/{FILE_PARAM_JSON}", old_position)
-
-        JsonUtils.add_item(
-            f"{PATH_FOLDERS_ORDER}/{order_id}/{FILE_PARAM_JSON}", data, new_position)
-
-        response = get_chains(order_id)
-
-        record = [item for item in response['data']
-                  if "name" in item and item["name"] == param['name']]
-
-        position = int(record[0]['id']) - 1
-
-        response['data'][position]["active"] = True
-
-        return ServiceUtils.success(response)
+        return get_chains(order_id)
     except Exception as e:
         return ServiceUtils.error(e)
 
@@ -56,7 +78,7 @@ def params_job():
         order_id = param['order_id']
         job_id = param['job_id']
 
-        response = get_params(order_id, job_id)
+        response = chain_service.get_params(order_id, job_id)
 
         return ServiceUtils.success(response)
     except Exception as e:
@@ -64,34 +86,42 @@ def params_job():
 
 
 @chains_routes.route('/update_params', methods=['POST'])
-def update_params_job():
+def update_params():
     try:
         param = request.get_json()
         order_id = param['order_id']
         job_id = param['job_id']
-        new_data = param['data']
+        params = param['params']
+        chain_service.update_params(order_id, job_id, params)
 
-        JsonUtils.write_json(
-            f"{PATH_FOLDERS_ORDER}/{order_id}/{NAME_JOBS}/{job_id}/{FILE_PARAM_JSON}", new_data)
-
-        return ServiceUtils.success({})
+        return ServiceUtils.success({"data": {}})
     except Exception as e:
         return ServiceUtils.error(e)
 
 
-@chains_routes.route('/process/<string:name>', methods=['POST'])
-def process(name):
+@chains_routes.route('/history')
+def history():
+    try:
+        response = scheduler_service.get_historical()
+        # response.sort(key=lambda x: x['startDate'], reverse=True)
+        return ServiceUtils.success({"data": response})
+    except Exception as e:
+        return ServiceUtils.error(e)
+
+
+@chains_routes.route('/process/<string:order_id>', methods=['POST'])
+def process(order_id):
     values = {}
     try:
-        spooler = SpoolerTask()
-        spooler.logger.info("Orden a procesar " + name)
-        spooler.get_chains(name)
-        
-        values = ChainsHelper.create_record(
-            name, spooler.current_job, spooler.log_name)
-        
-        JsonUtils.add_item(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}", values)
+        spooler = SpoolerTask(scheduler_service)
+        spooler.logger.info("Orden a procesar " + order_id)
+        spooler.get_order(order_id)
 
+        values = ChainsHelper.create_record(
+            order_id, spooler.current_job, spooler.log_name)
+
+        id = scheduler_service.add_historical(values)
+        
         spooler.process()
 
         process_record(spooler.logger, values, "SUCCESS")
@@ -111,43 +141,28 @@ def process(name):
 @chains_routes.route('/log/<string:name>', methods=['POST'])
 def log_data(name):
     try:
-        response = JsonUtils.read_log_file(f"{PATH_LOG}/{name}")
-        return ServiceUtils.success(response)
-    except Exception as e:
-        return ServiceUtils.error(e)
-
-
-@chains_routes.route('/history')
-def history():
-    try:
-        response = get_history()
-        response.sort(key=lambda x: x['startDate'], reverse=True)
+        response = scheduler_service.get_logs(name)
         return ServiceUtils.success({"data": response})
     except Exception as e:
         return ServiceUtils.error(e)
 
 
-def get_chains(name):
-    chains = JsonUtils.read_json(
-        f"{PATH_FOLDERS_ORDER}/{name}/{FILE_PARAM_JSON}")
-    positions = []
-    for i, obj in enumerate(chains):
-        obj["id"] = i + 1
-        positions.append(i+1)
-
-    options = [item["name"] for item in chains]
-    options.append("exito")
-    options.append("error")
-
-    return {"data": chains, "options": options, "positions": positions}
+@ chains_routes.route('/delete_historical', methods=['POST'])
+def delete_historical():
+    try:
+        scheduler_service.delete_all_historical()
+        return ServiceUtils.success({})
+    except Exception as e:
+        return ServiceUtils.error(e)
 
 
-def get_params(order_id, job_id):
-    return JsonUtils.read_json(f"{PATH_FOLDERS_ORDER}/{order_id}/{NAME_JOBS}/{job_id}/{FILE_PARAM_JSON}")
-
-
-def get_history():
-    return JsonUtils.read_json(f"{PATH_FOLDERS_ORDER}/{FILE_ORDERS_JSON}")
+@ chains_routes.route('/delete_logs', methods=['POST'])
+def delete_logs():
+    try:
+        scheduler_service.delete_all_logs()
+        return ServiceUtils.success({})
+    except Exception as e:
+        return ServiceUtils.error(e)
 
 
 def process_record(logger, values, type):
@@ -157,9 +172,7 @@ def process_record(logger, values, type):
     else:
         values = ChainsHelper.update_record(values, "fallido", "error")
         logger.info("Proceso termino con error.")
-
-    JsonUtils.update_item(
-        PATH_FOLDERS_ORDER + "/" + FILE_ORDERS_JSON, 'id', values['id'], values)
+    scheduler_service.update_historical(values)
 
     handlers = logger.handlers[:]
     for handler in handlers:

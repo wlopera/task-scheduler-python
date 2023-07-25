@@ -10,8 +10,9 @@ class TemplateInterface(ABC):
         Plantilla para crear CRUD con MongoDB
     """
 
-    def __init__(self, mongo_db_connection, COLLECTION_NAME):
+    def __init__(self, mongo_db_connection, COLLECTION_NAME, clientMongoDB):
         self.mongo_db_connection = mongo_db_connection
+        self.clientMongoDB = clientMongoDB
         self.collection = mongo_db_connection[COLLECTION_NAME]
 
     @abstractmethod
@@ -28,7 +29,7 @@ class TemplateInterface(ABC):
     @abstractmethod
     def add(self, name):
         """
-           Agregar item de lqa base de datos.       
+           Agregar item de la base de datos.       
         Author:
             wlopera
         Return:
