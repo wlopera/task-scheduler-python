@@ -1,4 +1,3 @@
-import json
 class Scheduler:
 
     def __init__(self, order):

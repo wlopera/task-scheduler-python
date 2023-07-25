@@ -54,6 +54,8 @@ Subir a vercel
         Flask==2.3.2
         schedule==1.2.0
         Flask-Cors==3.0.10
+        paramiko==3.2.0
+        pymongo==4.4.1
   Nota:  $>  pip freeze > requirements.txt
 
 - Instalar vercel si no esta instalado:
@@ -88,19 +90,18 @@ Subir a vercel
     ? Link to existing project? [y/N] n
     ? What’s your project’s name? backend
     ? In which directory is your code located? ./
-    🔗  Linked to wlopera/backend (created .vercel and added it to .gitignore)
-    🔍  Inspect: https://vercel.com/wlopera/backend/Bpm2xouvjPGmZjzf6vvn9Qknj4d9 [3s]
-    ✅  Production: https://backend-chi-jet.vercel.app [13s]
-    📝  Deployed to production. Run `vercel --prod` to overwrite later (https://vercel.link/2F).
-    💡  To change the domain or build command, go to https://vercel.com/wlopera/backend/settings
+    Production: https://backend-one-nu.vercel.app [19s]
+    Deployed to production. Run `vercel --prod` to overwrite later (https://vercel.link/2F).
+    To change the domain or build command, go to https://vercel.com/wlopera/backend/settings
+
 
  Nota: https://vercel.com/wlopera/backend/7bNjVt7PnywhGhJs5MYBmHoSAfd8
        - Para ver detalles
 
-       https://backend-chi-jet.vercel.app 
+      https://backend-tau-pied.vercel.app
        - Para probarlo
 
-       https://backend-chi-jet.vercel.app/_logs
+       https://backend-one-nu.vercel.app/_logs
        - Para ver errores de compilación
 
 para actualizar proceso vercel:
@@ -115,7 +116,7 @@ para actualizar proceso vercel:
   https://backend-nlvaf44wx-wlopera.vercel.appQueued
   Building
   Completing
-  Production: https://backend-pi-fawn.vercel.app [13s]
+  Production: https://backend-one-nu.vercel.app [24s]
   Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
 
        

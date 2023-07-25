@@ -1,5 +1,5 @@
 Flask==2.3.2
-schedule==1.2.0
 Flask-Cors==3.0.10
 paramiko==3.2.0
 pymongo==4.4.1
+schedule==1.2.0
