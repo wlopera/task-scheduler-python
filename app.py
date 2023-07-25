@@ -30,5 +30,18 @@ app.register_blueprint(jobs_routes)
 app.register_blueprint(chains_routes)
 CORS(app)
 
+
+@app.route('/api/', methods=['GET'])
+def test():
+    """
+        Consultar los directorios de la carpeta requerida..
+    Author:
+        wlopera
+    Return:
+            dict: Carpetas de una ruta
+    """
+    return {"data": "Json de prueba", "code": 200}
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
