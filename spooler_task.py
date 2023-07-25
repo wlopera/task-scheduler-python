@@ -2,35 +2,36 @@ import sys
 import importlib
 from util.logger import setup_logger
 from datetime import datetime
-from util.json_utils import JsonUtils
-from util.constants import PATH_FOLDERS_ORDER, FILE_PARAM_JSON
 import time
-
 
 class SpoolerTask:
 
-    def __init__(self):
+    def __init__(self, scheduler_service):
+        self.scheduler_service = scheduler_service
         self.current_order = {}
         self.jobs = {}
         self.current_job = None
-        # self.logger = setup_logger("scheduler", "Scheduler-" + datetime.now().strftime('%Y%m%d%H%M%S'))
-        # self.log_name = "Scheduler-" + datetime.now().strftime('%Y%m%d')
         self.log_name = "Scheduler-" + datetime.now().strftime('%Y%m%d%H%M%S')
-        self.logger = setup_logger("scheduler", self.log_name)
+        self.logger = setup_logger(self.log_name, scheduler_service)
         self.logger.info(
             "#----------------------- Inicia proceso de Scheduler")
+        scheduler_service
 
-    def get_chains(self, order_id):
-        self.current_order = order_id
-        # Consultas las tareas a procesar
-         
-        self.jobs = JsonUtils.read_json(f"{PATH_FOLDERS_ORDER}/{order_id}/{FILE_PARAM_JSON}")
-        self.current_job = self.jobs[0]['name']
+    def get_order(self, order_id):
+        self.current_order = self.scheduler_service.get_order(order_id)
+        self.current_chains = self.current_order['chains']
+        self.current_job = self.current_chains[0]['name']
 
     def get_job(self, name):
-        for job in self.jobs:
+        for job in self.current_chains:
             if job['name'] == name:
                 return job
+        return None
+
+    def get_params(self, current_job):
+        for job in self.current_order['jobs']:
+            if job['_id'] == current_job['_id']:
+                return job['params']
         return None
 
     def process(self):
@@ -38,20 +39,17 @@ class SpoolerTask:
         time.sleep(20)
         self.logger.info("continuar................")
         # Iniciar el procesamiento de tareas
-        for iterator in range(len(self.jobs)):
+        for iterator in range(len(self.current_chains)):
             self.process_job(self.get_job(self.current_job))
         self.logger.info("Scheduler finalizado con exito")
 
     def process_job(self, job):
         package_job = "jobs." + job['package']
         class_job = job['class']
-        path_param = "JobScheduler/backend/orders/" + \
-            self.current_order + "/jobs/" + self.current_job
 
         # print("--------------------------------------------")
-        print("Package:" + package_job)
-        print("Class:" + class_job)
-        print("path_param:" + str(path_param))
+        # print("Package:" + package_job)
+        # print("Class:" + class_job)
 
         try:
             module = importlib.import_module(package_job)
@@ -62,24 +60,29 @@ class SpoolerTask:
             instance.logger = self.logger
 
             # Actualizar parametros de la orden con los de la tarea
-            instance.update_param(instance, path_param)           
+            params = self.get_params(job)
+            # print("job:", job)
+            # print("params:", params)
+
+            instance.update_param(instance, params)
             result = instance.spooler_process(instance)
             self.logger.info(f"Resultado: {result}")
             if result == False:
                 print("Error salida del app")
-                self.logger.error("Error salida del app: ", self.current_job)
+                self.logger.error(f"Error salida del app: {self.current_job}")                
                 raise Exception("Error salida del app: ", self.current_job)
-                #sys.exit()
-            else:                
+                # sys.exit()
+            else:
                 print("Proceso exitoso...!")
-                self.logger.info("Proceso exitoso: ", self.current_job)
+                self.logger.info(f"Proceso exitoso: {self.current_job}")
                 self.current_job = job['next']
                 print("")
         except ImportError as err:
             print(f"Error: {err}")
             self.logger.error(f"Error: {err}")
             print("")
-            raise(err) 
+            raise (err)
+
 
 if __name__ == "__main__":
     spooler = SpoolerTask()
@@ -96,7 +99,7 @@ if __name__ == "__main__":
         spooler.get_chains("batch_files")
 
     # spooler.logger.info("ORDER ==> " + str(spooler.order))
-    spooler.logger.info("JOBS ==> " + str(spooler.jobs))
+    spooler.logger.info("JOBS ==> " + str(spooler.current_chains))
     spooler.logger.info("Tarea inicial ==> " + spooler.current_job)
 
     spooler.process()
