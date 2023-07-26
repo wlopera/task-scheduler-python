@@ -98,7 +98,7 @@ Subir a vercel
  Nota: https://vercel.com/wlopera/backend/7bNjVt7PnywhGhJs5MYBmHoSAfd8
        - Para ver detalles
 
-      https://backend-tau-pied.vercel.app
+      https://backend-tau-pied.vercel.app 
        - Para probarlo
 
        https://backend-one-nu.vercel.app/_logs
