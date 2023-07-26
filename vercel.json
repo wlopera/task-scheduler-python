@@ -11,6 +11,11 @@
         "src": "/(.*)",
         "dest": "/app.py"
       }
-    ]
+    ],
+    "env": {
+      "MONGO_DB_URI": "mongodb+srv://admin:admin@cluster0.fcz7lpr.mongodb.net/?retryWrites=true&w=majority",
+      "MONGO_DB_PORT": "27017",
+      "MONGO_DB_NAME":"scheduler"
+    }
   }
   
