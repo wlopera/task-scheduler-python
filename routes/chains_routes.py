@@ -121,7 +121,7 @@ def process(order_id):
             order_id, spooler.current_job, spooler.log_name)
 
         id = scheduler_service.add_historical(values)
-        
+
         spooler.process()
 
         process_record(spooler.logger, values, "SUCCESS")
@@ -147,24 +147,6 @@ def log_data(name):
         return ServiceUtils.error(e)
 
 
-@ chains_routes.route('/delete_historical', methods=['POST'])
-def delete_historical():
-    try:
-        scheduler_service.delete_all_historical()
-        return ServiceUtils.success({})
-    except Exception as e:
-        return ServiceUtils.error(e)
-
-
-@ chains_routes.route('/delete_logs', methods=['POST'])
-def delete_logs():
-    try:
-        scheduler_service.delete_all_logs()
-        return ServiceUtils.success({})
-    except Exception as e:
-        return ServiceUtils.error(e)
-
-
 def process_record(logger, values, type):
     if type == "SUCCESS":
         values = ChainsHelper.update_record(values, "exitoso", "success")
@@ -178,3 +160,23 @@ def process_record(logger, values, type):
     for handler in handlers:
         logger.removeHandler(handler)
         handler.close()
+
+
+@chains_routes.route('/delete_historical', methods=['POST'])
+def delete_historical():
+    try:
+        print("BORRANDO HISTORICO..................................")
+        # scheduler_service.delete_all_historical()
+        return ServiceUtils.success({})
+    except Exception as e:
+        return ServiceUtils.error(e)
+
+
+@chains_routes.route('/delete_logs', methods=['POST'])
+def delete_logs():
+    try:
+        print("BORRANDO LOGS..................................")
+        # scheduler_service.delete_all_logs()
+        return ServiceUtils.success({})
+    except Exception as e:
+        return ServiceUtils.error(e)

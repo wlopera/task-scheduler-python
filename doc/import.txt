@@ -26,12 +26,13 @@ Estructura caroetas y archivos
 ----------------------------------------------------------------------
 Carpetas:
 --------
-    helpers
-    jobs
-    og
-    orders
-    routes
-    util
+    backend:
+      doc: import.txt
+      helpers
+      jobs
+      routes
+      services
+      util
 
 ARchivos proyecto:
 -----------------
@@ -42,20 +43,18 @@ spooler_task.py
 Archivos configuración:
 ----------------------
 .gitignore
-import.txt
 requirements.txt
-
-
+vercel.json
 
 ----------------------------------------------------------------------
 Subir a vercel
 ----------------------------------------------------------------------
 - Crear archivo requirements.txt, con dependencias:
         Flask==2.3.2
-        schedule==1.2.0
         Flask-Cors==3.0.10
         paramiko==3.2.0
         pymongo==4.4.1
+        schedule==1.2.0
   Nota:  $>  pip freeze > requirements.txt
 
 - Instalar vercel si no esta instalado:
@@ -76,7 +75,12 @@ Subir a vercel
         "src": "/(.*)",
         "dest": "/app.py"
       }
-    ]
+    ],
+    "env": {
+      "MONGO_DB_URI": "mongodb+srv://admin:admin@cluster0.fcz7lpr.mongodb.net/?retryWrites=true&w=majority",
+      "MONGO_DB_PORT": "27017",
+      "MONGO_DB_NAME":"scheduler"
+    }
   }
 
   Nota: Esto configura Vercel para usar el runtime de Python y ejecutar app.py 
@@ -90,18 +94,16 @@ Subir a vercel
     ? Link to existing project? [y/N] n
     ? What’s your project’s name? backend
     ? In which directory is your code located? ./
-    Production: https://backend-one-nu.vercel.app [19s]
+    Production: https://backend-tau-teal.vercel.app/api/  [19s]
     Deployed to production. Run `vercel --prod` to overwrite later (https://vercel.link/2F).
     To change the domain or build command, go to https://vercel.com/wlopera/backend/settings
 
 
- Nota: https://vercel.com/wlopera/backend/7bNjVt7PnywhGhJs5MYBmHoSAfd8
-       - Para ver detalles
-
-      https://backend-tau-pied.vercel.app 
+ Nota: 
+      https://backend-tau-teal.vercel.app/api/
        - Para probarlo
 
-       https://backend-one-nu.vercel.app/_logs
+       https://backend-tau-teal.vercel.app/api/_logs
        - Para ver errores de compilación
 
 para actualizar proceso vercel:
@@ -119,14 +121,5 @@ para actualizar proceso vercel:
   Production: https://backend-one-nu.vercel.app [24s]
   Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
 
-       
-
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-----------------------------------------------------------------------
-----------------------------------------------------------------------
+     
+---------------------------------------------------------------------

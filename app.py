@@ -1,16 +1,18 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 import os
 import atexit
+import traceback
 
 from routes.orders_routes import orders_routes
 from routes.jobs_routes import jobs_routes
 from routes.chains_routes import chains_routes
+from routes.auth_routes import auth_routes
 
 from util.constants import MONGO_DB_URI, MONGO_DB_PORT, MONGO_DB_NAME
-import traceback
+from util.auth.middleware import validar_token
 
 try:
     app = Flask(__name__)
@@ -38,6 +40,28 @@ try:
     # # Rutas
     app.register_blueprint(orders_routes)
     app.register_blueprint(jobs_routes)
+    app.register_blueprint(auth_routes)
+
+    # Middleware para validar el token antes de acceder a los servicios protegidos.
+    @app.before_request
+    def validar_token_middleware():
+        # Obtener la ruta actual de la solicitud
+        current_route = request.path
+
+        print(444444444, current_route)
+        # Rutas protegidas con el middleware de validación del token
+        protected_routes = ['/api/chains/delete_historical',
+                            '/api/chains/delete_logs']
+
+        # Aplicar el middleware solo a las rutas protegidas
+        if current_route in protected_routes:
+            response = validar_token()
+            print(12345, response)
+            # Si la respuesta contiene un mensaje de error, detener la ejecución y devolver la respuesta al cliente
+            if response[1] == 401:
+                return response[0]
+
+    # Registrar solo el blueprint chains_routes
     app.register_blueprint(chains_routes)
 
     @app.route('/api/', methods=['GET'])
@@ -52,8 +76,8 @@ try:
         mongo = f"data: {mongo_uri} - {mongo_port}  - {mongo_name}"
         return {"data": "Json de prueba 2", "code": 200, "mongo": mongo}
 
-
     # Función para cerrar la conexión a MongoDB al finalizar la aplicación Flask
+
     def close_mongo_connection():
         client.close()
 

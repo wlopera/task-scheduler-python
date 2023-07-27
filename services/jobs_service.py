@@ -8,8 +8,8 @@ class JobService(TemplateInterface):
 
     def get(self, order_id):
         filter = {"_id": ObjectId(order_id)}
-        reponse = self.collection.find(filter)
-        json_response = [json.dumps(item, default=str) for item in reponse]
+        response = self.collection.find(filter)
+        json_response = [json.dumps(item, default=str) for item in response]
         jobs = []
         for item in json_response:
             obj = json.loads(item)
