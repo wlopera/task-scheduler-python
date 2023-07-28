@@ -48,7 +48,6 @@ try:
         # Obtener la ruta actual de la solicitud
         current_route = request.path
 
-        print(444444444, current_route)
         # Rutas protegidas con el middleware de validación del token
         protected_routes = ['/api/chains/delete_historical',
                             '/api/chains/delete_logs']
@@ -56,10 +55,9 @@ try:
         # Aplicar el middleware solo a las rutas protegidas
         if current_route in protected_routes:
             response = validar_token()
-            print(12345, response)
             # Si la respuesta contiene un mensaje de error, detener la ejecución y devolver la respuesta al cliente
             if response[1] == 401:
-                return response[0]
+                return {response}
 
     # Registrar solo el blueprint chains_routes
     app.register_blueprint(chains_routes)

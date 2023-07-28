@@ -165,8 +165,7 @@ def process_record(logger, values, type):
 @chains_routes.route('/delete_historical', methods=['POST'])
 def delete_historical():
     try:
-        print("BORRANDO HISTORICO..................................")
-        # scheduler_service.delete_all_historical()
+        scheduler_service.delete_all_historical()
         return ServiceUtils.success({})
     except Exception as e:
         return ServiceUtils.error(e)
@@ -175,8 +174,7 @@ def delete_historical():
 @chains_routes.route('/delete_logs', methods=['POST'])
 def delete_logs():
     try:
-        print("BORRANDO LOGS..................................")
-        # scheduler_service.delete_all_logs()
+        scheduler_service.delete_all_logs()
         return ServiceUtils.success({})
     except Exception as e:
         return ServiceUtils.error(e)

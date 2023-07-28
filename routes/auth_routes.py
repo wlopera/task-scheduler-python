@@ -32,14 +32,15 @@ def login():
         param = request.get_json()
         username = param['username']
         password = param['password']
+        print(12345, param)
 
         result = auth_service.login(username)
         if len(result) == 0:
-            return ServiceUtils.success({"data": {"token": None, "description": "Usuario no valido"}})
+            return ServiceUtils.success({"data": {"token": None, "description": "Usuario no valido", "code": 401}})
         elif result['encript'] == password:
             token = generar_token(username)
-            return ServiceUtils.success({"data": {"token": token, "description": "Usuario valido"}})
+            return ServiceUtils.success({"data": {"token": token, "description": "Usuario valido", "code": 200}})
         else:
-            return ServiceUtils.success({"data": {"token": None, "description": "Usuario no autorizado"}})
+            return ServiceUtils.success({"data": {"token": None, "description": "Usuario no autorizado", "code": 401}})
     except Exception as e:
         return ServiceUtils.error(e)

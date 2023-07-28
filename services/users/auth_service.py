@@ -16,5 +16,11 @@ class AuthService():
     def login(self, user_name):
         filter = {"name": user_name}
         response = self.collection.find(filter)
+        print(22222, response)
         json_response = [json.dumps(item, default=str) for item in response]
-        return json.loads(json_response[0])
+        print(33333, json_response)
+        if len(json_response) > 0:
+            return json.loads(json_response[0])
+        else:
+            return json_response
+
